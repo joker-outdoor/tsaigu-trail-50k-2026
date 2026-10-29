@@ -70,7 +70,8 @@ export async function sceneFixture({buildingsFile='buildings.json',badFetch=fals
     constructor(c){controls=this;this.camera=c;this.target=new THREE.Vector3();this.autoRotate=false;this.listeners={};}
     update(){this.camera.lookAt(this.target);}addEventListener(k,fn){this.listeners[k]=fn;}
   }
-  const route=structuredClone(routeData||JSON.parse(await readFile(new URL('../data/route.json',import.meta.url),'utf8')));
+  // Fixed synthetic fixtures keep scene assumptions independent of the published route.
+  const route=structuredClone(routeData||JSON.parse(await readFile(new URL('../examples/fixtures/route.json',import.meta.url),'utf8')));
   // Use the local demo track, moving a footprint onto its middle for independent-height checks.
   if(buildingsFile!==null)route.buildingsFile=buildingsFile;
   if(imageryDetailFile!==undefined)route.imageryDetailFile=imageryDetailFile;
@@ -84,7 +85,7 @@ export async function sceneFixture({buildingsFile='buildings.json',badFetch=fals
   const lon=mx*360-180,lat=Math.atan(Math.sinh(Math.PI*(1-2*my)))*180/Math.PI;
   const buildings=cityData||{version:1,source:{name:'test',url:'https://example.com',license:'test',extractedOn:'2026-10-24',corridorMeters:500},heightNote:'test estimates',
     buildings:[footprint({ring:[[lon,lat],[lon+size,lat],[lon+size,lat+size],[lon,lat+size]],heightM:339,minHeightM:200})]};
-  const terrain=structuredClone(terrainData||JSON.parse(await readFile(new URL('../data/terrain.json',import.meta.url),'utf8')));
+  const terrain=structuredClone(terrainData||JSON.parse(await readFile(new URL('../examples/fixtures/terrain.json',import.meta.url),'utf8')));
   if(flat)terrain.elevations.fill(500);
   const context=vm.createContext({...style,THREE:{...THREE,WebGLRenderer:Renderer,TextureLoader:class{async loadAsync(){return new THREE.Texture({width:1024,height:1024});}}},OrbitControls:Controls,
     document:{getElementById:element,createElement:()=>element(Symbol()),createTextNode:text=>({textContent:text}),querySelector:element,querySelectorAll:selector=>selector==='.kilometer'?Array.from(elements.values()).filter(e=>e.className==='map-label kilometer'&&!e.removed):[]},matchMedia:()=>({matches:reduced}),
